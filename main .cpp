@@ -1,18 +1,16 @@
-#include "report.cpp"
-#include "storage.cpp"
-#include "library.cpp"
 #include "report.h"
-#include "libaray.h"
+#include "libary.h"
 #include "storage.h"
 #include "utils.h"
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <stdexcept>
 using namespace std;
 int main() {
-
+    
      LibraryState state;
-    string dbPath = "library_data.txt";
+    string dbPath = "library_data.txt"; 
     loadDatabase(state, "library_data.txt");
     saveDatabase(state, "library_data.txt");
 
@@ -29,33 +27,41 @@ int main() {
             cout <<BLUE<< "6. Save and Exit" <<RESET<< endl;
             cout << "Enter choice: ";
 
-
-            if (!(cin >> choice))
+        
+            if (!(cin >> choice)) 
                 cout << RED << "Error!! Invalid input! Please enter a number." << RESET << endl;
-
+            
             switch (choice) {
-                 case 1:{
+                 case 1:{ 
                     Book b;
+                    cout << "\n--- Add New Book ---" << endl;
                     cout << "Enter ISBN: "; cin >> b.isbn;
-                    cout << "Enter Title: "; cin.ignore(); getline(cin, b.title);
-                    cout << "Enter Author: "; getline(cin, b.author);
-                    cout << "Enter Copies: "; cin >> b.totalCopies;
-                    b.availableCopies = b.totalCopies;
-                    addBook(state, b);
-                    logActivity("Added new book: " + b.title);
-                    cout << GREEN << "Book added!" << RESET << endl;
+                    cout << "Enter Title: "; 
+                    cin.ignore();
+                    getline(cin, b.title);
+                    cout << "Enter Author: "; 
+                    getline(cin, b.author);
+                    cout << "Enter Total Copies: "; cin >> b.totalCopies;
+                    
+                    b.availableCopies = b.totalCopies; 
+                    
+                    addBook(state, b); 
+                    logActivity("Member B added book: " + b.title); 
+                    cout << GREEN << "Book added successfully!" << RESET << endl;
                     break;
                 }
-                 case 2:{
-                     string isbn, mid;
-                    cout << "Enter ISBN: "; cin >> isbn;
-                    cout << "Enter Member ID: "; cin >> mid;
-                    checkoutBook(state, isbn, mid); // دالة مريم
-                    logActivity("Book " + isbn + " checked out by " + mid);
-                    cout << GREEN << "Checkout successful!" << RESET << endl;
-                    break;
-                 }
+                 case 2:{ 
+                    string isbn, memberId;
+                    cout << "\n--- Checkout Book ---" << endl;
+                    cout << "Enter Book ISBN: "; cin >> isbn;
+                    cout << "Enter Member ID: "; cin >> memberId;
 
+                    checkoutBook(state, isbn, memberId); 
+                    
+                    logActivity("Book " + isbn + " checked out by " + memberId); 
+                    cout << GREEN << "Checkout completed successfully!" << RESET << endl;
+                    break;
+                }
                  case 3:
                      generateOverdueReport(state);
                     break;
@@ -67,18 +73,18 @@ int main() {
                      cout << GREEN << "Advanced to next day: " << state.currentDay << RESET << endl;
                      break;
                       case 6:
-                      saveDatabase(state, dbPath);
+                      saveDatabase(state, dbPath);                
                       cout << GREEN << "Data saved successfully. Exiting..." << RESET << endl;
                      return 0;
                  default:
                 cout << RED << "Invalid choice. Please try again." << RESET << endl;
         }
 }
-
+            
         catch (const exception& e) {
             cout << RED << " Error!! " << e.what() << RESET << endl;
-            cin.clear();
-            cin.ignore(1000, '\n');
+            cin.clear(); 
+            cin.ignore(1000, '\n'); 
         }
     }
 
