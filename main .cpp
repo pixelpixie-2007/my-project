@@ -1,4 +1,4 @@
-#include "report.h"
+#include "reports.h"
 #include "library.h"
 #include "storage.h"
 #include "utils.h"
@@ -19,14 +19,21 @@ int main() {
          try{
             cout <<BLUE<< "\n  ====== Library Management System ======" <<RESET<< endl;
             cout <<BLUE<< "Current Day: " << state.currentDay <<RESET<< endl;
-            cout <<BLUE<< "1. Add Book (Member A)" <<RESET<< endl;
-            cout <<BLUE<< "2. Checkout Book (Member A)" <<RESET<< endl;
-            cout <<BLUE<< "3. Generate Overdue Report (Member B)" <<RESET<< endl;
-            cout <<BLUE<< "4. Export Overdue List (Member B)" <<RESET<< endl;
-            cout <<BLUE<< "5. Advance to Next Day" <<RESET<< endl;
-            cout <<BLUE<< "6. Save and Exit" <<RESET<< endl;
+            cout << "1.  Add New Book" << endl;  //
+            cout << "2.  Add New Member" << endl;
+            cout << "3.  Checkout Book (Borrow)" << endl; //
+            cout << "4.  Return Book" << endl;
+            cout << "5.  Search for a Book" << endl;
+            cout << "6.  Generate Overdue Report" << endl;
+            cout << "7.  Export Overdue List (.txt)" << endl;
+            cout << "8.  Advance to Next Day" << endl; //
+            cout << "9.  Save and Exit" << endl; //
             cout << "Enter choice: ";
+            
 
+            if (!(cin >> choice)) {
+                throw runtime_error("Invalid input! Please enter a number.");
+            }
             
             switch (choice) {
                  case 1:{ 
@@ -47,7 +54,19 @@ int main() {
                     cout << GREEN << "Book added successfully!" << RESET << endl;
                     break;
                 }
-                 case 2:{ 
+
+                 case 2:{
+                   Member m;
+                   cout << "Enter Member ID: "; cin >> m.id;
+                   cout << "Enter Member Name: "; cin.ignore(); getline(cin, m.name);
+                   addMember(state, m);
+                   logActivity("Added Member: " + m.name);
+                   cout << GREEN << "Success: Member registered!" << RESET << endl;
+                   break;
+
+                 }
+                 
+                 case 3:{ 
                     string isbn, memberId;
                     cout << "\n--- Checkout Book ---" << endl;
                     cout << "Enter Book ISBN: "; cin >> isbn;
@@ -59,17 +78,40 @@ int main() {
                     cout << GREEN << "Checkout completed successfully!" << RESET << endl;
                     break;
                 }
-                 case 3:
+                 
+
+                case 4: { // Return Book
+                    string isbn, mid;
+                    cout << "Enter Book ISBN: "; cin >> isbn;
+                    cout << "Enter Member ID: "; cin >> mid;
+                    returnBook(state, isbn, mid);
+                    logActivity("Member " + mid + " returned " + isbn);
+                    cout << GREEN << "Success: Book returned to shelf!" << RESET << endl;
+                    break;
+                }
+                case 5: { // Search Book
+                    string isbn;
+                    cout << "Enter ISBN to search: "; cin >> isbn;
+                    Book* b = findBook(state, isbn);
+                    if (b) {
+                        cout << "\nFound: " << b->title << " by " << b->author << endl;
+                        cout << "Status: " << b->availableCopies << " / " << b->totalCopies << " available." << endl;
+                    } else {
+                        cout << RED << "Book not found." << RESET << endl;
+                    }
+                    break;
+                }
+                 case 6:
                      generateOverdueReport(state);
                     break;
-                 case 4:
+                 case 7:
                       exportOverdueBooks(state, "overdue_report.txt");
                       break;
-                 case 5:
+                 case 8:
                       state.currentDay++;
                      cout << GREEN << "Advanced to next day: " << state.currentDay << RESET << endl;
                      break;
-                      case 6:
+                      case 9:
                       saveDatabase(state, dbPath);                
                       cout << GREEN << "Data saved successfully. Exiting..." << RESET << endl;
                      return 0;
